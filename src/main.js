@@ -28,7 +28,30 @@ document.addEventListener('keyup', function(ev) {
     delete world.keys[keyCodeMap[ev.keyCode]];
 }, true);
 
-function loop() {
+var fpsInterval,
+    startTime,
+    then;
+
+function startLoop(fps) {
+    fpsInterval = 1000 / fps;
+    then = window.performance.now();
+    startTime = then;
+    loop();
+}
+
+function loop(newtime) {
+    requestAnimationFrame(loop);
+
+    var now = newtime;
+    var elapsed = now - then;
+
+    if (elapsed > fpsInterval) {
+        then = now - (elapsed % fpsInterval);
+        animate();
+    }
+}
+
+function animate() {
     world.header.update();
 
     if (world.changeRoom) {
@@ -55,7 +78,6 @@ function loop() {
     }
 
     ++world.tick;
-    window.requestAnimationFrame(loop);
 }
 
-window.requestAnimationFrame(loop);
+startLoop(30);
